@@ -23,7 +23,8 @@ cloud_logging_client.setup_logging()
 load_dotenv()
 
 model_name = os.getenv("MODEL")
-
+KEY: MODEL
+VALUE: gemini-1.5-pro
 # --- Custom Tools ---
 
 def add_prompt_to_state(
@@ -110,26 +111,3 @@ root_agent = Agent(
     tools=[add_prompt_to_state],
     sub_agents=[planet_explorer_workflow]
 )
-from flask import Flask, request, jsonify
-from agent import root_agent  # importing your main agent
-
-app = Flask(__name__)
-
-@app.route("/")
-def home():
-    return "🚀 Planet Guide Agent is Live!"
-
-@app.route("/ask", methods=["POST"])
-def ask():
-    data = request.json
-    user_input = data.get("prompt", "")
-
-    try:
-        # Run your agent
-        response = root_agent.run(user_input)  # IMPORTANT LINE
-        return jsonify({"response": str(response)})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8080)
